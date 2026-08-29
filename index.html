@@ -829,9 +829,16 @@ function renderHistory() {
           </div>
           ${isOpen ? `
           <div class="accordion-body">
+            <div class="font-mono text-dim" style="font-size:10px;letter-spacing:2px;margin-bottom:10px">RIEPILOGO XP</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-bottom:4px">
+              <span class="font-mono text-dim" style="font-size:10px;min-width:30px">N°</span>
+              <span class="font-mono text-dim" style="font-size:10px;flex:1;padding:0 12px">VOCE</span>
+              <span class="font-mono text-dim" style="font-size:10px">XP</span>
+            </div>
             ${rows.filter(r => r.xp > 0).map(r => `
-            <div class="xp-row" style="padding:4px 0">
-              <span class="xp-row-label">${r.label}</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+              <span class="font-mono" style="color:var(--gold);min-width:30px">${r.val === '✓' ? '1' : r.val}</span>
+              <span class="xp-row-label" style="flex:1;padding:0 12px">${r.label}</span>
               <span class="font-mono" style="color:var(--gold)">+${r.xp}</span>
             </div>`).join('')}
           </div>` : ''}
