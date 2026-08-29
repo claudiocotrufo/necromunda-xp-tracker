@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N26 — XP Battle Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@300;400;600;700&family=Inter:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1a2d42;
+    --navy-light: #243b55;
+    --ivory: #e8dfc8;
+    --ivory-dim: #b5a98a;
+    --red: #8b1a1a;
+    --red-bright: #c0392b;
+    --gold: #c9a84c;
+    --green: #2d5a27;
+    --green-bright: #4caf50;
+    --text: #d4cbb8;
+    --text-dim: #7a7060;
+    --border: #2a3f58;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; min-height: 100vh; padding-bottom: 80px; }
+
+  .header {
+    background: linear-gradient(135deg, #0a1520 0%, var(--navy-mid) 100%);
+    border-bottom: 2px solid var(--red);
+    padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-title { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700; color: var(--ivory); letter-spacing: 3px; text-transform: uppercase; }
+  .header-title span { color: var(--red-bright); }
+  .header-badge { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--ivory-dim); letter-spacing: 2px; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+
+  .section-title {
+    font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--ivory-dim); letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .card { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 12px; }
+
+  .btn {
+    font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; padding: 8px 16px;
+    border: none; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--red); color: var(--ivory); }
+  .btn-primary:hover { background: var(--red-bright); }
+  .btn-secondary { background: var(--navy-light); color: var(--ivory-dim); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--ivory-dim); color: var(--ivory); }
+  .btn-success { background: var(--green); color: var(--ivory); }
+  .btn-success:hover { background: var(--green-bright); }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-danger { background: transparent; color: var(--red-bright); border: 1px solid var(--red); }
+  .btn-danger:hover { background: var(--red); color: var(--ivory); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  input {
+    background: var(--navy); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 3px; font-family: 'Inter', sans-serif;
+    font-size: 13px; width: 100%; outline: none; transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--gold); }
+  input::placeholder { color: var(--text-dim); }
+  label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--ivory-dim); letter-spacing: 1px; display: block; margin-bottom: 4px; }
+  .form-group { margin-bottom: 12px; }
+
+  .tabs { display: flex; gap: 2px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .tab {
+    font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; padding: 10px 20px;
+    cursor: pointer; color: var(--text-dim); border-bottom: 2px solid transparent;
+    transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none;
+  }
+  .tab.active { color: var(--ivory); border-bottom-color: var(--red-bright); }
+  .tab:hover { color: var(--text); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .gang-item {
+    background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px;
+    padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center;
+    justify-content: space-between; cursor: pointer; transition: border-color 0.15s;
+  }
+  .gang-item:hover { border-color: var(--ivory-dim); }
+  .gang-name { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; color: var(--ivory); letter-spacing: 1px; }
+  .gang-meta { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  /* FIGHTER SELECT ROW */
+  .fighter-select-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; margin-bottom: 6px;
+    border: 1px solid var(--border); border-radius: 3px;
+    background: var(--navy); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .fighter-select-row:hover { border-color: var(--ivory-dim); }
+  .fighter-select-row.selected { border-color: var(--gold); background: #1a2d42; }
+
+  .fighter-select-name { font-family: 'Oswald', sans-serif; font-size: 15px; color: var(--ivory); }
+
+  .fighter-checkbox {
+    width: 20px; height: 20px;
+    accent-color: var(--gold); cursor: pointer;
+  }
+
+  .selected-count {
+    font-family: 'Share Tech Mono', monospace; font-size: 12px;
+    color: var(--gold); margin-bottom: 12px; letter-spacing: 1px;
+  }
+
+  .battle-header {
+    background: linear-gradient(135deg, var(--navy-mid), #0f1e30);
+    border: 1px solid var(--border); border-left: 3px solid var(--red-bright);
+    border-radius: 4px; padding: 16px; margin-bottom: 20px;
+  }
+  .battle-name { font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 700; color: var(--ivory); letter-spacing: 2px; }
+  .battle-vs { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--gold); margin-top: 4px; letter-spacing: 2px; }
+
+  .fighter-row { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; margin-bottom: 8px; }
+  .fighter-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .fighter-name { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; color: var(--ivory); letter-spacing: 1px; }
+
+  .xp-total { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 700; color: var(--gold); }
+  .xp-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-align: right; }
+
+  .xp-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .xp-action {
+    background: var(--navy); border: 1px solid var(--border); border-radius: 3px;
+    padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .xp-action-label { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text); flex: 1; line-height: 1.3; }
+  .xp-action-value { font-family: 'Share Tech Mono', monospace; font-size: 14px; font-weight: bold; color: var(--gold); white-space: nowrap; }
+
+  .xp-counter { display: flex; align-items: center; gap: 6px; }
+  .xp-btn {
+    width: 28px; height: 28px; background: var(--navy-light); border: 1px solid var(--border);
+    border-radius: 3px; color: var(--ivory); font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.1s; font-family: monospace;
+  }
+  .xp-btn:hover { background: var(--navy-mid); border-color: var(--ivory-dim); }
+  .xp-count { font-family: 'Share Tech Mono', monospace; font-size: 20px; color: var(--ivory); min-width: 28px; text-align: center; }
+
+  .xp-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; }
+  .xp-checkbox input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; }
+
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace; font-size: 12px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-xp { color: var(--gold); font-size: 16px; font-weight: bold; }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 1px; }
+  .empty-state .icon { font-size: 32px; margin-bottom: 12px; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal {
+    background: var(--navy-mid); border: 1px solid var(--border); border-top: 3px solid var(--red-bright);
+    border-radius: 4px; padding: 24px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto;
+  }
+  .modal-title { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; color: var(--ivory); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+
+  .alert { padding: 10px 14px; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 12px; margin-bottom: 16px; }
+  .alert-info { background: #1a2d42; border-left: 3px solid var(--gold); color: var(--ivory-dim); }
+
+  .history-card { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 12px; }
+
+  /* ACCORDION */
+  .accordion-item {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--navy-mid);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .accordion-header:hover { background: var(--navy-light); }
+
+  .accordion-body {
+    padding: 14px 16px;
+    background: var(--navy);
+    border-top: 1px solid var(--border);
+  }
+
+  .flex { display: flex; }
+  .gap-8 { gap: 8px; }
+  .mt-8 { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-20 { margin-top: 20px; }
+  .text-right { text-align: right; }
+  .text-gold { color: var(--gold); }
+  .text-dim { color: var(--text-dim); }
+  .font-mono { font-family: 'Share Tech Mono', monospace; }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* XP SECTIONS */
+  .xp-sections { display: flex; flex-direction: column; gap: 8px; }
+
+  .xp-section {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+  }
+
+  .xp-section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ivory-dim);
+    margin-bottom: 10px;
+  }
+
+  .xp-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+
+  .xp-row:last-child { margin-bottom: 0; }
+
+  .xp-row-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .xp-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: bold;
+    margin-left: 4px;
+  }
+
+  .xp-checkbox-big {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .xp-checkbox-big input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">N26 — <span>XP</span> Tracker</div>
+    <div class="header-badge">NECROMUNDA 2026 // CAMPAIGN SYSTEM</div>
+  </div>
+  <div class="header-badge" id="currentBattleLabel">NO ACTIVE BATTLE</div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('gangs',this)">Gangs</button>
+    <button class="tab" onclick="showTab('battle',this)">Battle</button>
+    <button class="tab" onclick="showTab('history',this)">History</button>
+  </div>
+
+  <!-- TAB: GANGS -->
+  <div id="tab-gangs" class="tab-content active">
+    <div class="section-title">Roster Gangs</div>
+    <div class="card">
+      <div class="section-title">Nuova Gang</div>
+      <div class="form-group">
+        <label>Nome Gang</label>
+        <input type="text" id="newGangName" placeholder="es. 13th SOT — Redemption Reapers">
+      </div>
+      <button class="btn btn-primary" onclick="addGang()">+ Aggiungi Gang</button>
+    </div>
+    <div id="gangList"></div>
+
+    <!-- MODAL GANG -->
+    <div id="gangModal" class="modal-overlay" style="display:none">
+      <div class="modal">
+        <div class="modal-title" id="gangModalTitle">Gang</div>
+
+        <div class="section-title">Aggiungi Fighter</div>
+        <div class="form-group">
+          <label>Nome Fighter</label>
+          <input type="text" id="newFighterName" placeholder="es. Mira Vashenka">
+        </div>
+        <button class="btn btn-primary" onclick="addFighter()">+ Aggiungi</button>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Seleziona per Battaglia</div>
+        <div id="selectedCount" class="selected-count">0 fighter selezionati</div>
+        <div id="gangFighterList"></div>
+
+        <div class="divider"></div>
+        <div class="flex gap-8">
+          <button class="btn btn-success" id="btnNuovaBattaglia" onclick="openBattleModal()" disabled>▶ Nuova Battaglia</button>
+          <button class="btn btn-secondary" onclick="closeGangModal()">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: BATTLE -->
+  <div id="tab-battle" class="tab-content">
+    <div id="noBattleMsg" class="empty-state">
+      <div class="icon">⚔</div>
+      <div>NESSUNA BATTAGLIA ATTIVA</div>
+      <div class="mt-8 text-dim">Seleziona una gang e avvia una battaglia</div>
+    </div>
+    <div id="battleContent" style="display:none">
+      <div class="battle-header">
+        <div class="battle-name" id="battleTitle">—</div>
+        <div class="battle-vs" id="battleVs">—</div>
+      </div>
+      <div class="alert alert-info">Segna gli XP per ogni fighter. Finalizza a fine partita.</div>
+      <div id="battleFighters"></div>
+      <div class="mt-20 flex gap-8">
+        <button class="btn btn-success" onclick="finalizeBattle()">✓ Finalizza</button>
+        <button class="btn btn-danger" onclick="cancelBattle()">✕ Annulla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: HISTORY -->
+  <div id="tab-history" class="tab-content">
+    <div class="section-title">Storico Battaglie</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:12px 16px;background:var(--navy);border-top:1px solid var(--border);z-index:50">
+  <button class="btn btn-danger btn-sm" onclick="resetAll()">⚠ Reset All Data</button>
+</div>
+
+<!-- MODAL: FIGHTER DETAIL -->
+<div id="fighterDetailModal" class="modal-overlay" style="display:none" onclick="this.style.display='none'">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="modal-title" id="fighterDetailTitle" style="margin-bottom:0"></div>
+      <div style="font-family:Oswald,sans-serif;font-size:24px;font-weight:700;color:var(--gold)" id="fighterDetailTotal"></div>
+    </div>
+    <div id="fighterDetailRows"></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="document.getElementById('fighterDetailModal').style.display='none'">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NUOVA BATTAGLIA -->
+<div id="battleModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Nuova Battaglia</div>
+    
+    <div class="form-group">
+      <label>Nome Battaglia *</label>
+      <input type="text" id="battleName" placeholder="es. Assalto al Settore 7">
+    </div>
+    <div class="form-group">
+      <label>Campagna *</label>
+      <input type="text" id="battleCampaign" placeholder="es. La Guerra dell'Underhive">
+    </div>
+    <div class="form-group">
+      <label>Avversario *</label>
+      <input type="text" id="battleOpponent" placeholder="es. Ferocious Queens">
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title" style="cursor:pointer" onclick="toggleScenario()">Scenario <span id="scenarioToggle" style="color:var(--gold)">+ mostra</span></div>
+    
+    <div id="scenarioFields" style="display:none">
+      <div class="form-group">
+        <label>Deployment</label>
+        <input type="text" id="battleDeployment" placeholder="es. Standard">
+      </div>
+      <div class="form-group">
+        <label>Objective</label>
+        <input type="text" id="battleObjective" placeholder="es. Zona di Controllo">
+      </div>
+      <div class="form-group">
+        <label>Side Job</label>
+        <input type="text" id="battleSideJob" placeholder="es. —">
+      </div>
+      <div class="form-group">
+        <label>Crew</label>
+        <input type="text" id="battleCrew" placeholder="es. Custom Selection">
+      </div>
+    </div>
+
+    <div class="flex gap-8 mt-16">
+      <button class="btn btn-primary" onclick="confirmBattle()">▶ Inizia</button>
+      <button class="btn btn-secondary" onclick="closeBattleModal()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let state = { gangs: [], battles: [], activeBattle: null, selectedGangId: null };
+
+function save() { localStorage.setItem('n26_tracker', JSON.stringify(state)); }
+function load() { const d = localStorage.getItem('n26_tracker'); if (d) state = JSON.parse(d); }
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+  if (name === 'history') renderHistory();
+  if (name === 'battle') renderBattle();
+}
+
+// GANGS
+function addGang() {
+  const name = document.getElementById('newGangName').value.trim();
+  if (!name) return;
+  state.gangs.push({ id: Date.now(), name, fighters: [], createdAt: new Date().toLocaleDateString('it-IT') });
+  save();
+  document.getElementById('newGangName').value = '';
+  renderGangs();
+}
+
+function deleteGang(id) {
+  state.gangs = state.gangs.filter(g => g.id !== id);
+  save(); renderGangs();
+}
+
+function openGangModal(id) {
+  state.selectedGangId = id;
+  const gang = state.gangs.find(g => g.id === id);
+  // Reset selezioni
+  gang.fighters.forEach(f => { f.selected = false; });
+  document.getElementById('gangModalTitle').textContent = gang.name;
+  renderGangFighters();
+  document.getElementById('gangModal').style.display = 'flex';
+}
+
+function closeGangModal() {
+  document.getElementById('gangModal').style.display = 'none';
+  state.selectedGangId = null;
+}
+
+function addFighter() {
+  const name = document.getElementById('newFighterName').value.trim();
+  if (!name) return;
+  const gang = state.gangs.find(g => g.id === state.selectedGangId);
+  gang.fighters.push({ id: Date.now(), name, selected: false });
+  save();
+  document.getElementById('newFighterName').value = '';
+  renderGangFighters();
+}
+
+function deleteFighter(fighterId) {
+  const gang = state.gangs.find(g => g.id === state.selectedGangId);
+  gang.fighters = gang.fighters.filter(f => f.id !== fighterId);
+  save(); renderGangFighters();
+}
+
+function toggleFighter(fighterId) {
+  const gang = state.gangs.find(g => g.id === state.selectedGangId);
+  const f = gang.fighters.find(f => f.id === fighterId);
+  f.selected = !f.selected;
+  save();
+  renderGangFighters();
+}
+
+function renderGangs() {
+  const el = document.getElementById('gangList');
+  if (!state.gangs.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">🎯</div><div>NESSUNA GANG REGISTRATA</div></div>';
+    return;
+  }
+  el.innerHTML = state.gangs.map(g => `
+    <div class="gang-item" onclick="openGangModal(${g.id})">
+      <div>
+        <div class="gang-name">${g.name}</div>
+        <div class="gang-meta">${g.fighters.length} fighters · ${g.createdAt}</div>
+      </div>
+      <div class="flex gap-8" onclick="event.stopPropagation()">
+        <button class="btn btn-secondary btn-sm" onclick="openGangModal(${g.id})">Apri</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteGang(${g.id})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGangFighters() {
+  const gang = state.gangs.find(g => g.id === state.selectedGangId);
+  const el = document.getElementById('gangFighterList');
+  const selectedCount = gang.fighters.filter(f => f.selected).length;
+
+  // Aggiorna contatore e bottone
+  document.getElementById('selectedCount').textContent = selectedCount + ' fighter selezionat' + (selectedCount === 1 ? 'o' : 'i');
+  document.getElementById('btnNuovaBattaglia').disabled = selectedCount === 0;
+
+  if (!gang.fighters.length) {
+    el.innerHTML = '<div class="text-dim font-mono" style="font-size:12px;padding:12px 0">Nessun fighter aggiunto</div>';
+    return;
+  }
+
+  el.innerHTML = gang.fighters.map(f => `
+    <div class="fighter-select-row ${f.selected ? 'selected' : ''}" onclick="toggleFighter(${f.id})">
+      <span class="fighter-select-name">${f.name}</span>
+      <div class="flex gap-8" style="align-items:center">
+        <input type="checkbox" class="fighter-checkbox" ${f.selected ? 'checked' : ''} 
+          onclick="event.stopPropagation(); toggleFighter(${f.id})">
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteFighter(${f.id})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// BATTLE
+function openBattleModal() {
+  document.getElementById('gangModal').style.display = 'none';
+  document.getElementById('battleModal').style.display = 'flex';
+}
+
+function closeBattleModal() {
+  document.getElementById('battleModal').style.display = 'none';
+  document.getElementById('gangModal').style.display = 'flex';
+}
+
+function toggleScenario() {
+  const el = document.getElementById('scenarioFields');
+  const toggle = document.getElementById('scenarioToggle');
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    toggle.textContent = '− nascondi';
+  } else {
+    el.style.display = 'none';
+    toggle.textContent = '+ mostra';
+  }
+}
+
+function confirmBattle() {
+  const name = document.getElementById('battleName').value.trim();
+  const campaign = document.getElementById('battleCampaign').value.trim();
+  const opponent = document.getElementById('battleOpponent').value.trim();
+
+  if (!name || !campaign || !opponent) return;
+
+  const gang = state.gangs.find(g => g.id === state.selectedGangId);
+  const selected = gang.fighters.filter(f => f.selected);
+
+  const scenario = {
+    deployment: document.getElementById('battleDeployment').value.trim(),
+    objective: document.getElementById('battleObjective').value.trim(),
+    sideJob: document.getElementById('battleSideJob').value.trim(),
+    crew: document.getElementById('battleCrew').value.trim()
+  };
+
+  state.activeBattle = {
+    id: Date.now(), name, campaign, opponent, scenario,
+    gangId: state.selectedGangId, gangName: gang.name,
+    date: new Date().toLocaleDateString('it-IT'),
+    fighters: selected.map(f => ({
+      ...f,
+      participated: true,
+      seriouslyInjured: 0,
+      outOfAction: 0,
+      outOfActionChampion: 0,
+      assistance: 0,
+      mentor: 0,
+      objective: false
+    }))
+  };
+
+  save();
+  document.getElementById('battleModal').style.display = 'none';
+  ['battleName','battleCampaign','battleOpponent','battleDeployment','battleObjective','battleSideJob','battleCrew'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('scenarioFields').style.display = 'none';
+  document.getElementById('scenarioToggle').textContent = '+ mostra';
+
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-battle').classList.add('active');
+  document.querySelectorAll('.tab')[1].classList.add('active');
+  renderBattle();
+}
+
+function calcXP(f) {
+  let xp = 0;
+  if (f.participated) xp += 1;
+  xp += f.seriouslyInjured * 1;
+  xp += f.outOfAction * 2;
+  xp += f.outOfActionChampion * 3;
+  xp += f.assistance * 1;
+  xp += f.mentor * 1;
+  if (f.objective) xp += 1;
+  return xp;
+}
+
+function update(fighterId, field, value) {
+  const f = state.activeBattle.fighters.find(f => f.id === fighterId);
+  if (field === 'participated' || field === 'objective') f[field] = value;
+  else f[field] = Math.max(0, value);
+  save();
+  renderBattle();
+}
+
+let openFighterId = null;
+
+function toggleAccordion(fighterId) {
+  openFighterId = openFighterId === fighterId ? null : fighterId;
+  renderBattle();
+}
+
+function toggleHistoryAccordion(battleId, fighterId) {
+  const key = battleId + '_' + fighterId;
+  openFighterId = openFighterId === key ? null : key;
+  renderHistory();
+}
+
+function renderBattle() {
+  const noMsg = document.getElementById('noBattleMsg');
+  const content = document.getElementById('battleContent');
+  const label = document.getElementById('currentBattleLabel');
+
+  if (!state.activeBattle) {
+    noMsg.style.display = 'block';
+    content.style.display = 'none';
+    label.textContent = 'NO ACTIVE BATTLE';
+    return;
+  }
+
+  const b = state.activeBattle;
+  noMsg.style.display = 'none';
+  content.style.display = 'block';
+  label.textContent = '⚔ ' + b.name;
+  document.getElementById('battleTitle').textContent = b.name;
+  document.getElementById('battleVs').textContent = [b.campaign, b.opponent ? 'VS ' + b.opponent : null, b.date].filter(Boolean).join(' · ');
+
+  document.getElementById('battleFighters').innerHTML = b.fighters.map(f => {
+    const isOpen = openFighterId === f.id;
+    const xp = calcXP(f);
+    return `
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(${f.id})">
+        <span class="fighter-name">${f.name}</span>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="xp-total" style="font-size:22px">${xp}</span>
+          <span class="font-mono text-dim" style="font-size:14px">${isOpen ? '▲' : '▼'}</span>
+        </div>
+      </div>
+      ${isOpen ? `
+      <div class="accordion-body">
+        <div class="xp-sections">
+          <div class="xp-section">
+            <div class="xp-section-title">Partecipazione</div>
+            <label class="xp-checkbox-big">
+              <input type="checkbox" ${f.participated ? 'checked' : ''} onchange="update(${f.id},'participated',this.checked)">
+              <span>Ha partecipato <span class="xp-badge">+1</span></span>
+            </label>
+          </div>
+          <div class="xp-section">
+            <div class="xp-section-title">Kill</div>
+            <div class="xp-row">
+              <span class="xp-row-label">Seriously Injured <span class="xp-badge">+1</span></span>
+              <div class="xp-counter">
+                <button class="xp-btn" onclick="update(${f.id},'seriouslyInjured',${f.seriouslyInjured}-1)">−</button>
+                <span class="xp-count">${f.seriouslyInjured}</span>
+                <button class="xp-btn" onclick="update(${f.id},'seriouslyInjured',${f.seriouslyInjured}+1)">+</button>
+              </div>
+            </div>
+            <div class="xp-row">
+              <span class="xp-row-label">Out of Action <span class="xp-badge">+2</span></span>
+              <div class="xp-counter">
+                <button class="xp-btn" onclick="update(${f.id},'outOfAction',${f.outOfAction}-1)">−</button>
+                <span class="xp-count">${f.outOfAction}</span>
+                <button class="xp-btn" onclick="update(${f.id},'outOfAction',${f.outOfAction}+1)">+</button>
+              </div>
+            </div>
+            <div class="xp-row">
+              <span class="xp-row-label">OOA Leader/Champion <span class="xp-badge">+3</span></span>
+              <div class="xp-counter">
+                <button class="xp-btn" onclick="update(${f.id},'outOfActionChampion',${f.outOfActionChampion}-1)">−</button>
+                <span class="xp-count">${f.outOfActionChampion}</span>
+                <button class="xp-btn" onclick="update(${f.id},'outOfActionChampion',${f.outOfActionChampion}+1)">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="xp-section">
+            <div class="xp-section-title">Supporto</div>
+            <div class="xp-row">
+              <span class="xp-row-label">Assistance Recovery <span class="xp-badge">+1</span></span>
+              <div class="xp-counter">
+                <button class="xp-btn" onclick="update(${f.id},'assistance',${f.assistance}-1)">−</button>
+                <span class="xp-count">${f.assistance}</span>
+                <button class="xp-btn" onclick="update(${f.id},'assistance',${f.assistance}+1)">+</button>
+              </div>
+            </div>
+            <div class="xp-row">
+              <span class="xp-row-label">Mentor bonus <span class="xp-badge">+1</span></span>
+              <div class="xp-counter">
+                <button class="xp-btn" onclick="update(${f.id},'mentor',${f.mentor}-1)">−</button>
+                <span class="xp-count">${f.mentor}</span>
+                <button class="xp-btn" onclick="update(${f.id},'mentor',${f.mentor}+1)">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="xp-section">
+            <div class="xp-section-title">Obiettivo</div>
+            <label class="xp-checkbox-big">
+              <input type="checkbox" ${f.objective ? 'checked' : ''} onchange="update(${f.id},'objective',this.checked)">
+              <span>Controllo Obiettivo <span class="xp-badge">+1</span></span>
+            </label>
+          </div>
+        </div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function finalizeBattle() {
+  const b = JSON.parse(JSON.stringify(state.activeBattle));
+  b.fighters.forEach(f => { f.earnedXP = calcXP(f); });
+  b.finalized = true;
+  b.finalizedAt = new Date().toLocaleDateString('it-IT');
+  state.battles.push(b);
+  state.activeBattle = null;
+  save();
+  const total = b.fighters.reduce((sum, f) => sum + f.earnedXP, 0);
+  const lines = b.fighters.map(f => f.name + ': +' + f.earnedXP + ' XP').join('\n');
+  renderBattle();
+}
+
+function cancelBattle() {
+  state.activeBattle = null;
+  save();
+  renderBattle();
+}
+
+function deleteBattle(id) {
+  state.battles = state.battles.filter(b => b.id !== id);
+  save();
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (!state.battles.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><div>NESSUNA BATTAGLIA COMPLETATA</div></div>';
+    return;
+  }
+  el.innerHTML = [...state.battles].reverse().map(b => {
+    const total = b.fighters.reduce((sum, f) => sum + (f.earnedXP || 0), 0);
+    const s = b.scenario || {};
+    const hasScenario = s.deployment || s.objective || s.sideJob || s.crew;
+    const vsLine = [b.campaign, b.opponent ? 'VS ' + b.opponent : null].filter(Boolean).join(' · ');
+    return `
+    <div class="history-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-family:Oswald,sans-serif;font-size:18px;color:var(--ivory);font-weight:700">${b.name}</div>
+          ${vsLine ? `<div class="font-mono text-gold" style="font-size:11px;margin-top:2px">${vsLine}</div>` : ''}
+          <div class="font-mono text-dim" style="font-size:10px;margin-top:2px">${b.gangName} · ${b.date}</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div class="text-right">
+            <div style="font-family:Oswald,sans-serif;font-size:28px;color:var(--gold);font-weight:700">+${total}</div>
+            <div class="font-mono text-dim" style="font-size:10px">XP TOTALI</div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="deleteBattle(${b.id})" style="margin-top:4px">✕</button>
+        </div>
+      </div>
+      ${hasScenario ? `
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
+        ${s.deployment ? `<div class="font-mono text-dim" style="font-size:10px">DEPLOYMENT: <span style="color:var(--text)">${s.deployment}</span></div>` : ''}
+        ${s.objective ? `<div class="font-mono text-dim" style="font-size:10px">OBJECTIVE: <span style="color:var(--text)">${s.objective}</span></div>` : ''}
+        ${s.sideJob ? `<div class="font-mono text-dim" style="font-size:10px">SIDE JOB: <span style="color:var(--text)">${s.sideJob}</span></div>` : ''}
+        ${s.crew ? `<div class="font-mono text-dim" style="font-size:10px">CREW: <span style="color:var(--text)">${s.crew}</span></div>` : ''}
+      </div>` : ''}
+      <div class="divider"></div>
+      ${b.fighters.map(f => {
+        const key = b.id + '_' + f.id;
+        const isOpen = openFighterId === key;
+        const rows = [
+          { label: 'Ha partecipato', val: f.participated ? '✓' : '—', xp: f.participated ? 1 : 0 },
+          { label: 'Seriously Injured', val: f.seriouslyInjured || 0, xp: (f.seriouslyInjured||0) * 1 },
+          { label: 'Out of Action', val: f.outOfAction || 0, xp: (f.outOfAction||0) * 2 },
+          { label: 'OOA Leader/Champion', val: f.outOfActionChampion || 0, xp: (f.outOfActionChampion||0) * 3 },
+          { label: 'Assistance Recovery', val: f.assistance || 0, xp: f.assistance || 0 },
+          { label: 'Mentor bonus', val: f.mentor || 0, xp: f.mentor || 0 },
+          { label: 'Controllo Obiettivo', val: f.objective ? '✓' : '—', xp: f.objective ? 1 : 0 },
+        ];
+        return `
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleHistoryAccordion(${b.id}, ${f.id})">
+            <span style="font-family:Oswald,sans-serif;color:var(--ivory);font-size:15px">${f.name}</span>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="summary-xp">+${f.earnedXP || 0} XP</span>
+              <span class="font-mono text-dim" style="font-size:14px">${isOpen ? '▲' : '▼'}</span>
+            </div>
+          </div>
+          ${isOpen ? `
+          <div class="accordion-body">
+            ${rows.filter(r => r.xp > 0).map(r => `
+            <div class="xp-row" style="padding:4px 0">
+              <span class="xp-row-label">${r.label}</span>
+              <span class="font-mono" style="color:var(--gold)">+${r.xp}</span>
+            </div>`).join('')}
+          </div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>
+  `}).join('');
+}
+
+function resetAll() {
+  state = { gangs: [], battles: [], activeBattle: null, selectedGangId: null };
+  openFighterId = null;
+  localStorage.removeItem('n26_tracker');
+  renderGangs();
+  renderBattle();
+}
+
+load();
+renderGangs();
+renderBattle();
+
+function showFighterDetail(battleId, fighterId) {
+  const b = state.battles.find(b => b.id === battleId);
+  const f = b.fighters.find(f => f.id === fighterId);
+
+  const rows = [
+    { label: 'Ha partecipato', value: f.participated ? 1 : 0, xp: 1, show: true },
+    { label: 'Seriously Injured', value: f.seriouslyInjured || 0, xp: 1, show: true },
+    { label: 'Out of Action', value: f.outOfAction || 0, xp: 2, show: true },
+    { label: 'OOA Leader/Champion', value: f.outOfActionChampion || 0, xp: 3, show: true },
+    { label: 'Assistance Recovery', value: f.assistance || 0, xp: 1, show: true },
+    { label: 'Mentor bonus', value: f.mentor || 0, xp: 1, show: true },
+    { label: 'Controllo Obiettivo', value: f.objective ? 1 : 0, xp: 1, show: true },
+  ];
+
+  const rowsHtml = rows.map(r => {
+    const earned = r.value * r.xp;
+    const isCheck = r.label === 'Ha partecipato' || r.label === 'Controllo Obiettivo';
+    return `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-family:Inter,sans-serif;font-size:13px;color:${r.value ? 'var(--text)' : 'var(--text-dim)'}">${r.label} <span style="color:var(--gold);font-size:11px">+${r.xp}</span></span>
+      <span style="font-family:Share Tech Mono,monospace;font-size:15px;color:${earned > 0 ? 'var(--gold)' : 'var(--text-dim)'}">
+        ${isCheck ? (r.value ? '✓' : '—') : (r.value > 0 ? '×' + r.value + ' = +' + earned : '—')}
+      </span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('fighterDetailTitle').textContent = f.name;
+  document.getElementById('fighterDetailTotal').textContent = '+' + (f.earnedXP || 0) + ' XP';
+  document.getElementById('fighterDetailRows').innerHTML = rowsHtml;
+  document.getElementById('fighterDetailModal').style.display = 'flex';
+}
+</script>
+</body>
+</html>
