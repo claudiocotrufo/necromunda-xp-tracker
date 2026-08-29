@@ -316,9 +316,9 @@
       <div class="section-title">New Gang</div>
       <div class="form-group">
         <label>Gang Name</label>
-        <input type="text" id="newGangName" placeholder="e.g. My Gang Name">
+        <input type="text" id="newGangName" placeholder="e.g. My Gang Name" oninput="toggleBtn('btnAddGang','newGangName')">
       </div>
-      <button class="btn btn-primary" onclick="addGang()">+ Add Gang</button>
+      <button class="btn btn-primary" id="btnAddGang" onclick="addGang()" disabled>+ Add Gang</button>
     </div>
     <div id="gangList"></div>
 
@@ -329,9 +329,9 @@
         <div class="section-title">Add Fighter</div>
         <div class="form-group">
           <label>Fighter Name</label>
-          <input type="text" id="newFighterName" placeholder="e.g. Fighter Name">
+          <input type="text" id="newFighterName" placeholder="e.g. Fighter Name" oninput="toggleBtn('btnAddFighter','newFighterName')">
         </div>
-        <button class="btn btn-primary" onclick="addFighter()">+ Add</button>
+        <button class="btn btn-primary" id="btnAddFighter" onclick="addFighter()" disabled>+ Add</button>
         <div class="divider"></div>
         <div class="section-title">Select for Battle</div>
         <div id="selectedCount" class="selected-count">0 fighters selected</div>
@@ -424,6 +424,23 @@
 let state = { gangs: [], battles: [], activeBattle: null, selectedGangId: null };
 let openFighterId = null;
 
+function sanitize(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;')
+    .trim()
+    .slice(0, 80);
+}
+
+function toggleBtn(btnId, inputId) {
+  const val = document.getElementById(inputId).value.trim();
+  document.getElementById(btnId).disabled = val.length === 0;
+}
+
 function save() { localStorage.setItem('n26_tracker', JSON.stringify(state)); }
 function load() { const d = localStorage.getItem('n26_tracker'); if (d) state = JSON.parse(d); }
 
@@ -438,11 +455,12 @@ function showTab(name, el) {
 
 // GANGS
 function addGang() {
-  const name = document.getElementById('newGangName').value.trim();
+  const name = sanitize(document.getElementById('newGangName').value);
   if (!name) return;
   state.gangs.push({ id: Date.now(), name, fighters: [], createdAt: new Date().toLocaleDateString('en-GB') });
   save();
   document.getElementById('newGangName').value = '';
+  document.getElementById('btnAddGang').disabled = true;
   renderGangs();
 }
 
@@ -466,12 +484,13 @@ function closeGangModal() {
 }
 
 function addFighter() {
-  const name = document.getElementById('newFighterName').value.trim();
+  const name = sanitize(document.getElementById('newFighterName').value);
   if (!name) return;
   const gang = state.gangs.find(g => g.id === state.selectedGangId);
   gang.fighters.push({ id: Date.now(), name, selected: false });
   save();
   document.getElementById('newFighterName').value = '';
+  document.getElementById('btnAddFighter').disabled = true;
   renderGangFighters();
 }
 
@@ -548,17 +567,17 @@ function closeBattleModal() {
 }
 
 function confirmBattle() {
-  const name = document.getElementById('battleName').value.trim();
-  const campaign = document.getElementById('battleCampaign').value.trim();
-  const opponent = document.getElementById('battleOpponent').value.trim();
+  const name = sanitize(document.getElementById('battleName').value);
+  const campaign = sanitize(document.getElementById('battleCampaign').value);
+  const opponent = sanitize(document.getElementById('battleOpponent').value);
   if (!name || !campaign || !opponent) return;
   const gang = state.gangs.find(g => g.id === state.selectedGangId);
   const selected = gang.fighters.filter(f => f.selected);
   const scenario = {
-    deployment: document.getElementById('battleDeployment').value.trim(),
-    objective: document.getElementById('battleObjective').value.trim(),
-    sideJob: document.getElementById('battleSideJob').value.trim(),
-    crew: document.getElementById('battleCrew').value.trim()
+    deployment: sanitize(document.getElementById('battleDeployment').value),
+    objective: sanitize(document.getElementById('battleObjective').value),
+    sideJob: sanitize(document.getElementById('battleSideJob').value),
+    crew: sanitize(document.getElementById('battleCrew').value)
   };
   state.activeBattle = {
     id: Date.now(), name, campaign, opponent, scenario,
