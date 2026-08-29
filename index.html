@@ -811,7 +811,7 @@ function resetAll() {
   state = { gangs: [], battles: [], activeBattle: null, selectedGangId: null };
   openFighterId = null;
   localStorage.removeItem('n26_tracker');
-  renderGangs(); renderBattle();
+  location.reload();
 }
 
 load();
