@@ -1,290 +1,305 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>N26 — XP Battle Tracker</title>
+<title>N26 — XP Tracker</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@300;400;600;700&family=Inter:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@400;700;900&display=swap');
 
   :root {
-    --navy: #0d1b2a;
-    --navy-mid: #1a2d42;
-    --navy-light: #243b55;
-    --ivory: #e8dfc8;
-    --ivory-dim: #b5a98a;
-    --red: #8b1a1a;
-    --red-bright: #c0392b;
-    --gold: #c9a84c;
-    --green: #2d5a27;
-    --green-bright: #4caf50;
-    --text: #d4cbb8;
-    --text-dim: #7a7060;
-    --border: #2a3f58;
+    --black: #000000;
+    --dark: #030d03;
+    --dark2: #071407;
+    --green: #00ff41;
+    --green-dim: #00cc33;
+    --green-dark: #003d0f;
+    --green-border: #00802b;
+    --green-glow: rgba(0,255,65,0.25);
+    --text: #00ff41;
+    --text-dim: #00802b;
+    --amber: #ffb000;
+    --red: #ff2200;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--navy); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; min-height: 100vh; padding-bottom: 80px; }
 
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    min-height: 100vh;
+    padding-bottom: 60px;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.02) 2px, rgba(0,255,65,0.02) 4px);
+  }
+
+  /* SCANLINE EFFECT */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.1) 0px,
+      rgba(0,0,0,0.1) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* HEADER */
   .header {
-    background: linear-gradient(135deg, #0a1520 0%, var(--navy-mid) 100%);
-    border-bottom: 2px solid var(--red);
-    padding: 16px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100;
-  }
-  .header-title { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700; color: var(--ivory); letter-spacing: 3px; text-transform: uppercase; }
-  .header-title span { color: var(--red-bright); }
-  .header-badge { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--ivory-dim); letter-spacing: 2px; }
-
-  .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
-
-  .section-title {
-    font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
-    color: var(--ivory-dim); letter-spacing: 3px; text-transform: uppercase;
-    margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  .card { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 12px; }
-
-  .btn {
-    font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase; padding: 8px 16px;
-    border: none; border-radius: 3px; cursor: pointer; transition: all 0.15s;
-  }
-  .btn-primary { background: var(--red); color: var(--ivory); }
-  .btn-primary:hover { background: var(--red-bright); }
-  .btn-secondary { background: var(--navy-light); color: var(--ivory-dim); border: 1px solid var(--border); }
-  .btn-secondary:hover { border-color: var(--ivory-dim); color: var(--ivory); }
-  .btn-success { background: var(--green); color: var(--ivory); }
-  .btn-success:hover { background: var(--green-bright); }
-  .btn-sm { padding: 4px 10px; font-size: 11px; }
-  .btn-danger { background: transparent; color: var(--red-bright); border: 1px solid var(--red); }
-  .btn-danger:hover { background: var(--red); color: var(--ivory); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  input {
-    background: var(--navy); border: 1px solid var(--border); color: var(--text);
-    padding: 8px 12px; border-radius: 3px; font-family: 'Inter', sans-serif;
-    font-size: 13px; width: 100%; outline: none; transition: border-color 0.15s;
-  }
-  input:focus { border-color: var(--gold); }
-  input::placeholder { color: var(--text-dim); }
-  label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--ivory-dim); letter-spacing: 1px; display: block; margin-bottom: 4px; }
-  .form-group { margin-bottom: 12px; }
-
-  .tabs { display: flex; gap: 2px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-  .tab {
-    font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase; padding: 10px 20px;
-    cursor: pointer; color: var(--text-dim); border-bottom: 2px solid transparent;
-    transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none;
-  }
-  .tab.active { color: var(--ivory); border-bottom-color: var(--red-bright); }
-  .tab:hover { color: var(--text); }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .gang-item {
-    background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px;
-    padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center;
-    justify-content: space-between; cursor: pointer; transition: border-color 0.15s;
-  }
-  .gang-item:hover { border-color: var(--ivory-dim); }
-  .gang-name { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; color: var(--ivory); letter-spacing: 1px; }
-  .gang-meta { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-
-  /* FIGHTER SELECT ROW */
-  .fighter-select-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 12px; margin-bottom: 6px;
-    border: 1px solid var(--border); border-radius: 3px;
-    background: var(--navy); cursor: pointer;
-    transition: all 0.15s;
-  }
-  .fighter-select-row:hover { border-color: var(--ivory-dim); }
-  .fighter-select-row.selected { border-color: var(--gold); background: #1a2d42; }
-
-  .fighter-select-name { font-family: 'Oswald', sans-serif; font-size: 15px; color: var(--ivory); }
-
-  .fighter-checkbox {
-    width: 20px; height: 20px;
-    accent-color: var(--gold); cursor: pointer;
-  }
-
-  .selected-count {
-    font-family: 'Share Tech Mono', monospace; font-size: 12px;
-    color: var(--gold); margin-bottom: 12px; letter-spacing: 1px;
-  }
-
-  .battle-header {
-    background: linear-gradient(135deg, var(--navy-mid), #0f1e30);
-    border: 1px solid var(--border); border-left: 3px solid var(--red-bright);
-    border-radius: 4px; padding: 16px; margin-bottom: 20px;
-  }
-  .battle-name { font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 700; color: var(--ivory); letter-spacing: 2px; }
-  .battle-vs { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--gold); margin-top: 4px; letter-spacing: 2px; }
-
-  .fighter-row { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; margin-bottom: 8px; }
-  .fighter-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .fighter-name { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; color: var(--ivory); letter-spacing: 1px; }
-
-  .xp-total { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 700; color: var(--gold); }
-  .xp-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-align: right; }
-
-  .xp-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
-  .xp-action {
-    background: var(--navy); border: 1px solid var(--border); border-radius: 3px;
-    padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  }
-  .xp-action-label { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text); flex: 1; line-height: 1.3; }
-  .xp-action-value { font-family: 'Share Tech Mono', monospace; font-size: 14px; font-weight: bold; color: var(--gold); white-space: nowrap; }
-
-  .xp-counter { display: flex; align-items: center; gap: 6px; }
-  .xp-btn {
-    width: 28px; height: 28px; background: var(--navy-light); border: 1px solid var(--border);
-    border-radius: 3px; color: var(--ivory); font-size: 20px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.1s; font-family: monospace;
-  }
-  .xp-btn:hover { background: var(--navy-mid); border-color: var(--ivory-dim); }
-  .xp-count { font-family: 'Share Tech Mono', monospace; font-size: 20px; color: var(--ivory); min-width: 28px; text-align: center; }
-
-  .xp-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; }
-  .xp-checkbox input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; }
-
-  .summary-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid var(--border);
-    font-family: 'Share Tech Mono', monospace; font-size: 12px;
-  }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-xp { color: var(--gold); font-size: 16px; font-weight: bold; }
-
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 1px; }
-  .empty-state .icon { font-size: 32px; margin-bottom: 12px; }
-
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-  .modal {
-    background: var(--navy-mid); border: 1px solid var(--border); border-top: 3px solid var(--red-bright);
-    border-radius: 4px; padding: 24px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto;
-  }
-  .modal-title { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; color: var(--ivory); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
-
-  .alert { padding: 10px 14px; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 12px; margin-bottom: 16px; }
-  .alert-info { background: #1a2d42; border-left: 3px solid var(--gold); color: var(--ivory-dim); }
-
-  .history-card { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 12px; }
-
-  /* ACCORDION */
-  .accordion-item {
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    margin-bottom: 6px;
-    overflow: hidden;
-  }
-
-  .accordion-header {
+    background: var(--dark2);
+    border-bottom: 1px solid var(--green-border);
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--navy-mid);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 0 20px var(--green-glow);
+  }
+
+  .header-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--green);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px var(--green);
+  }
+
+  .header-title span { color: var(--amber); text-shadow: 0 0 10px var(--amber); }
+  .header-badge { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 20px 14px; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::before { content: '//'; color: var(--text-dim); }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--green-border); }
+
+  .card {
+    background: var(--dark2);
+    border: 1px solid var(--green-border);
+    border-radius: 2px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: inset 0 0 20px rgba(0,255,65,0.03);
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 2px;
     cursor: pointer;
-    transition: background 0.15s;
-    user-select: none;
+    transition: all 0.1s;
+    border: 1px solid;
   }
 
-  .accordion-header:hover { background: var(--navy-light); }
+  .btn-primary { background: transparent; color: var(--green); border-color: var(--green); }
+  .btn-primary:hover { background: var(--green-glow); box-shadow: 0 0 10px var(--green-glow); }
+  .btn-secondary { background: transparent; color: var(--text-dim); border-color: var(--green-border); }
+  .btn-secondary:hover { color: var(--green); border-color: var(--green-dim); }
+  .btn-success { background: transparent; color: var(--green); border-color: var(--green); }
+  .btn-success:hover { background: var(--green-glow); box-shadow: 0 0 15px var(--green-glow); }
+  .btn-danger { background: transparent; color: var(--red); border-color: var(--red); }
+  .btn-danger:hover { background: rgba(255,34,0,0.1); }
+  .btn-sm { padding: 4px 10px; font-size: 10px; }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  .accordion-body {
-    padding: 14px 16px;
-    background: var(--navy);
-    border-top: 1px solid var(--border);
+  /* INPUTS */
+  input {
+    background: var(--dark);
+    border: 1px solid var(--green-border);
+    color: var(--green);
+    padding: 8px 12px;
+    border-radius: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.1s;
   }
+  input:focus { border-color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+  input::placeholder { color: var(--text-dim); }
 
+  label { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; display: block; margin-bottom: 4px; text-transform: uppercase; }
+  .form-group { margin-bottom: 12px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--green-border); }
+  .tab {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    cursor: pointer;
+    color: var(--text-dim);
+    border-bottom: 2px solid transparent;
+    transition: all 0.1s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); text-shadow: 0 0 8px var(--green); }
+  .tab:hover { color: var(--green-dim); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* GANG ITEMS */
+  .gang-item {
+    background: var(--dark2);
+    border: 1px solid var(--green-border);
+    border-radius: 2px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .gang-item:hover { border-color: var(--green-dim); box-shadow: 0 0 10px var(--green-glow); }
+  .gang-name { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: 1px; text-shadow: 0 0 6px var(--green-glow); }
+  .gang-meta { font-size: 10px; color: var(--text-dim); margin-top: 3px; letter-spacing: 1px; }
+
+  /* FIGHTER SELECT */
+  .fighter-select-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; margin-bottom: 4px;
+    border: 1px solid var(--green-border); border-radius: 2px;
+    background: var(--dark); cursor: pointer; transition: all 0.1s;
+  }
+  .fighter-select-row:hover { border-color: var(--green-dim); }
+  .fighter-select-row.selected { border-color: var(--green); background: var(--dark2); box-shadow: 0 0 8px var(--green-glow); }
+  .fighter-select-name { font-size: 13px; color: var(--green); }
+  .fighter-checkbox { width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
+  .selected-count { font-size: 11px; color: var(--amber); margin-bottom: 10px; letter-spacing: 1px; }
+
+  /* BATTLE HEADER */
+  .battle-header {
+    background: var(--dark2);
+    border: 1px solid var(--green-border);
+    border-left: 3px solid var(--green);
+    border-radius: 2px;
+    padding: 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 0 20px var(--green-glow);
+  }
+  .battle-name { font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 900; color: var(--green); letter-spacing: 2px; text-shadow: 0 0 10px var(--green); }
+  .battle-vs { font-size: 11px; color: var(--amber); margin-top: 4px; letter-spacing: 2px; }
+
+  /* ACCORDION */
+  .accordion-item { border: 1px solid var(--green-border); border-radius: 2px; margin-bottom: 4px; overflow: hidden; }
+  .accordion-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; background: var(--dark2); cursor: pointer;
+    transition: all 0.1s; user-select: none;
+  }
+  .accordion-header:hover { background: var(--dark); border-color: var(--green-dim); }
+  .accordion-body { padding: 14px; background: var(--dark); border-top: 1px solid var(--green-border); }
+
+  .fighter-name { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: 1px; }
+  .xp-total { font-family: 'VT323', monospace; font-size: 32px; color: var(--amber); text-shadow: 0 0 10px var(--amber); }
+  .xp-label { font-size: 9px; color: var(--text-dim); letter-spacing: 2px; text-align: right; text-transform: uppercase; }
+
+  /* XP SECTIONS */
+  .xp-sections { display: flex; flex-direction: column; gap: 8px; }
+  .xp-section { background: var(--dark2); border: 1px solid var(--green-border); border-radius: 2px; padding: 10px 12px; }
+  .xp-section-title { font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+
+  .xp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 6px; }
+  .xp-row:last-child { margin-bottom: 0; }
+  .xp-row-label { font-size: 12px; color: var(--text); flex: 1; }
+  .xp-badge { font-size: 11px; color: var(--amber); font-weight: bold; margin-left: 4px; }
+
+  .xp-checkbox-big { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 12px; color: var(--text); }
+  .xp-checkbox-big input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--green); cursor: pointer; flex-shrink: 0; }
+
+  /* XP COUNTER */
+  .xp-counter { display: flex; align-items: center; gap: 6px; }
+  .xp-btn {
+    width: 28px; height: 28px;
+    background: var(--dark2); border: 1px solid var(--green-border);
+    border-radius: 2px; color: var(--green); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.1s; font-family: monospace;
+  }
+  .xp-btn:hover { border-color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+  .xp-count { font-family: 'VT323', monospace; font-size: 22px; color: var(--green); min-width: 28px; text-align: center; text-shadow: 0 0 6px var(--green); }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal {
+    background: var(--dark2); border: 1px solid var(--green); border-top: 2px solid var(--green);
+    border-radius: 2px; padding: 20px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto;
+    box-shadow: 0 0 40px var(--green-glow);
+  }
+  .modal-title { font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 900; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 18px; text-shadow: 0 0 8px var(--green); }
+
+  /* ALERT */
+  .alert-info { padding: 10px 14px; border-left: 2px solid var(--amber); background: rgba(255,176,0,0.05); font-size: 11px; color: var(--amber); margin-bottom: 14px; letter-spacing: 1px; }
+
+  /* HISTORY */
+  .history-card { background: var(--dark2); border: 1px solid var(--green-border); border-radius: 2px; padding: 14px; margin-bottom: 10px; }
+
+  /* SUMMARY */
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--green-border); font-size: 12px; }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-xp { color: var(--amber); font-family: 'VT323', monospace; font-size: 20px; text-shadow: 0 0 8px var(--amber); }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 12px; letter-spacing: 2px; }
+  .empty-state .icon { font-size: 28px; margin-bottom: 12px; }
+
+  /* FOOTER */
+  .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; padding: 10px 16px; background: var(--dark2); border-top: 1px solid var(--green-border); z-index: 50; }
+
+  /* UTILS */
   .flex { display: flex; }
   .gap-8 { gap: 8px; }
   .mt-8 { margin-top: 8px; }
   .mt-16 { margin-top: 16px; }
   .mt-20 { margin-top: 20px; }
   .text-right { text-align: right; }
-  .text-gold { color: var(--gold); }
+  .text-amber { color: var(--amber); }
   .text-dim { color: var(--text-dim); }
-  .font-mono { font-family: 'Share Tech Mono', monospace; }
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
-
-  /* XP SECTIONS */
-  .xp-sections { display: flex; flex-direction: column; gap: 8px; }
-
-  .xp-section {
-    background: var(--navy);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 12px 14px;
-  }
-
-  .xp-section-title {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--ivory-dim);
-    margin-bottom: 10px;
-  }
-
-  .xp-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    gap: 6px;
-  }
-
-  .xp-row:last-child { margin-bottom: 0; }
-
-  .xp-row-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    flex: 1;
-  }
-
-  .xp-badge {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--gold);
-    font-weight: bold;
-    margin-left: 4px;
-  }
-
-  .xp-checkbox-big {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-  }
-
-  .xp-checkbox-big input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--gold);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
+  .divider { height: 1px; background: var(--green-border); margin: 14px 0; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <div>
-    <div class="header-title">N26 — <span>XP</span> Tracker</div>
-    <div class="header-badge">NECROMUNDA 2026 // CAMPAIGN SYSTEM</div>
+    <div class="header-title">N26 // <span>XP</span> TRACKER</div>
+    <div class="header-badge">NECROMUNDA 2026 // CAMPAIGN MANAGEMENT SYSTEM</div>
   </div>
-  <div class="header-badge" id="currentBattleLabel">NO ACTIVE BATTLE</div>
+  <div class="header-badge" id="currentBattleLabel">[ NO ACTIVE BATTLE ]</div>
 </div>
 
 <div class="container">
@@ -296,14 +311,14 @@
 
   <!-- TAB: GANGS -->
   <div id="tab-gangs" class="tab-content active">
-    <div class="section-title">Roster Gangs</div>
+    <div class="section-title">Gang Roster</div>
     <div class="card">
-      <div class="section-title">Nuova Gang</div>
+      <div class="section-title">New Gang</div>
       <div class="form-group">
-        <label>Nome Gang</label>
-        <input type="text" id="newGangName" placeholder="es. 13th SOT — Redemption Reapers">
+        <label>Gang Name</label>
+        <input type="text" id="newGangName" placeholder="e.g. My Gang Name">
       </div>
-      <button class="btn btn-primary" onclick="addGang()">+ Aggiungi Gang</button>
+      <button class="btn btn-primary" onclick="addGang()">+ Add Gang</button>
     </div>
     <div id="gangList"></div>
 
@@ -311,24 +326,20 @@
     <div id="gangModal" class="modal-overlay" style="display:none">
       <div class="modal">
         <div class="modal-title" id="gangModalTitle">Gang</div>
-
-        <div class="section-title">Aggiungi Fighter</div>
+        <div class="section-title">Add Fighter</div>
         <div class="form-group">
-          <label>Nome Fighter</label>
-          <input type="text" id="newFighterName" placeholder="es. Mira Vashenka">
+          <label>Fighter Name</label>
+          <input type="text" id="newFighterName" placeholder="e.g. Fighter Name">
         </div>
-        <button class="btn btn-primary" onclick="addFighter()">+ Aggiungi</button>
-
+        <button class="btn btn-primary" onclick="addFighter()">+ Add</button>
         <div class="divider"></div>
-
-        <div class="section-title">Seleziona per Battaglia</div>
-        <div id="selectedCount" class="selected-count">0 fighter selezionati</div>
+        <div class="section-title">Select for Battle</div>
+        <div id="selectedCount" class="selected-count">0 fighters selected</div>
         <div id="gangFighterList"></div>
-
         <div class="divider"></div>
         <div class="flex gap-8">
-          <button class="btn btn-success" id="btnNuovaBattaglia" onclick="openBattleModal()" disabled>▶ Nuova Battaglia</button>
-          <button class="btn btn-secondary" onclick="closeGangModal()">Chiudi</button>
+          <button class="btn btn-success" id="btnNuovaBattaglia" onclick="openBattleModal()" disabled>▶ New Battle</button>
+          <button class="btn btn-secondary" onclick="closeGangModal()">Close</button>
         </div>
       </div>
     </div>
@@ -338,97 +349,80 @@
   <div id="tab-battle" class="tab-content">
     <div id="noBattleMsg" class="empty-state">
       <div class="icon">⚔</div>
-      <div>NESSUNA BATTAGLIA ATTIVA</div>
-      <div class="mt-8 text-dim">Seleziona una gang e avvia una battaglia</div>
+      <div>NO ACTIVE BATTLE</div>
+      <div class="mt-8 text-dim">Select a gang and start a battle</div>
     </div>
     <div id="battleContent" style="display:none">
       <div class="battle-header">
         <div class="battle-name" id="battleTitle">—</div>
         <div class="battle-vs" id="battleVs">—</div>
       </div>
-      <div class="alert alert-info">Segna gli XP per ogni fighter. Finalizza a fine partita.</div>
+      <div class="alert-info">// Track XP for each fighter. Finalize at end of battle.</div>
       <div id="battleFighters"></div>
       <div class="mt-20 flex gap-8">
-        <button class="btn btn-success" onclick="finalizeBattle()">✓ Finalizza</button>
-        <button class="btn btn-danger" onclick="cancelBattle()">✕ Annulla</button>
+        <button class="btn btn-success" onclick="finalizeBattle()">✓ Finalize</button>
+        <button class="btn btn-danger" onclick="cancelBattle()">✕ Cancel</button>
       </div>
     </div>
   </div>
 
   <!-- TAB: HISTORY -->
   <div id="tab-history" class="tab-content">
-    <div class="section-title">Storico Battaglie</div>
+    <div class="section-title">Battle Log</div>
     <div id="historyList"></div>
   </div>
 </div>
 
-<div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:12px 16px;background:var(--navy);border-top:1px solid var(--border);z-index:50">
-  <button class="btn btn-danger btn-sm" onclick="resetAll()">⚠ Reset All Data</button>
+<div class="footer">
+  <button class="btn btn-danger btn-sm" onclick="resetAll()">⚠ RESET ALL DATA</button>
 </div>
 
-<!-- MODAL: FIGHTER DETAIL -->
-<div id="fighterDetailModal" class="modal-overlay" style="display:none" onclick="this.style.display='none'">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="modal-title" id="fighterDetailTitle" style="margin-bottom:0"></div>
-      <div style="font-family:Oswald,sans-serif;font-size:24px;font-weight:700;color:var(--gold)" id="fighterDetailTotal"></div>
-    </div>
-    <div id="fighterDetailRows"></div>
-    <div style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="document.getElementById('fighterDetailModal').style.display='none'">Chiudi</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: NUOVA BATTAGLIA -->
+<!-- MODAL: NEW BATTLE -->
 <div id="battleModal" class="modal-overlay" style="display:none">
   <div class="modal">
-    <div class="modal-title">Nuova Battaglia</div>
-    
+    <div class="modal-title">New Battle</div>
     <div class="form-group">
-      <label>Nome Battaglia *</label>
-      <input type="text" id="battleName" placeholder="es. Assalto al Settore 7">
+      <label>Battle Name *</label>
+      <input type="text" id="battleName" placeholder="e.g. Battle Name">
     </div>
     <div class="form-group">
-      <label>Campagna *</label>
-      <input type="text" id="battleCampaign" placeholder="es. La Guerra dell'Underhive">
+      <label>Campaign *</label>
+      <input type="text" id="battleCampaign" placeholder="e.g. Campaign Name">
     </div>
     <div class="form-group">
-      <label>Avversario *</label>
-      <input type="text" id="battleOpponent" placeholder="es. Ferocious Queens">
+      <label>Opponent *</label>
+      <input type="text" id="battleOpponent" placeholder="e.g. Opponent Gang">
     </div>
-
     <div class="divider"></div>
-    <div class="section-title" style="cursor:pointer" onclick="toggleScenario()">Scenario <span id="scenarioToggle" style="color:var(--gold)">+ mostra</span></div>
-    
+    <div class="section-title" style="cursor:pointer" onclick="toggleScenario()">Scenario <span id="scenarioToggle" style="color:var(--amber)">+ show</span></div>
     <div id="scenarioFields" style="display:none">
       <div class="form-group">
         <label>Deployment</label>
-        <input type="text" id="battleDeployment" placeholder="es. Standard">
+        <input type="text" id="battleDeployment" placeholder="e.g. Standard">
       </div>
       <div class="form-group">
         <label>Objective</label>
-        <input type="text" id="battleObjective" placeholder="es. Zona di Controllo">
+        <input type="text" id="battleObjective" placeholder="e.g. Objective Type">
       </div>
       <div class="form-group">
         <label>Side Job</label>
-        <input type="text" id="battleSideJob" placeholder="es. —">
+        <input type="text" id="battleSideJob" placeholder="e.g. —">
       </div>
       <div class="form-group">
         <label>Crew</label>
-        <input type="text" id="battleCrew" placeholder="es. Custom Selection">
+        <input type="text" id="battleCrew" placeholder="e.g. Crew Type">
       </div>
     </div>
-
     <div class="flex gap-8 mt-16">
-      <button class="btn btn-primary" onclick="confirmBattle()">▶ Inizia</button>
-      <button class="btn btn-secondary" onclick="closeBattleModal()">Annulla</button>
+      <button class="btn btn-primary" onclick="confirmBattle()">▶ Start</button>
+      <button class="btn btn-secondary" onclick="closeBattleModal()">Cancel</button>
     </div>
   </div>
 </div>
 
 <script>
 let state = { gangs: [], battles: [], activeBattle: null, selectedGangId: null };
+let openFighterId = null;
 
 function save() { localStorage.setItem('n26_tracker', JSON.stringify(state)); }
 function load() { const d = localStorage.getItem('n26_tracker'); if (d) state = JSON.parse(d); }
@@ -446,7 +440,7 @@ function showTab(name, el) {
 function addGang() {
   const name = document.getElementById('newGangName').value.trim();
   if (!name) return;
-  state.gangs.push({ id: Date.now(), name, fighters: [], createdAt: new Date().toLocaleDateString('it-IT') });
+  state.gangs.push({ id: Date.now(), name, fighters: [], createdAt: new Date().toLocaleDateString('en-GB') });
   save();
   document.getElementById('newGangName').value = '';
   renderGangs();
@@ -460,7 +454,6 @@ function deleteGang(id) {
 function openGangModal(id) {
   state.selectedGangId = id;
   const gang = state.gangs.find(g => g.id === id);
-  // Reset selezioni
   gang.fighters.forEach(f => { f.selected = false; });
   document.getElementById('gangModalTitle').textContent = gang.name;
   renderGangFighters();
@@ -492,24 +485,23 @@ function toggleFighter(fighterId) {
   const gang = state.gangs.find(g => g.id === state.selectedGangId);
   const f = gang.fighters.find(f => f.id === fighterId);
   f.selected = !f.selected;
-  save();
-  renderGangFighters();
+  save(); renderGangFighters();
 }
 
 function renderGangs() {
   const el = document.getElementById('gangList');
   if (!state.gangs.length) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">🎯</div><div>NESSUNA GANG REGISTRATA</div></div>';
+    el.innerHTML = '<div class="empty-state"><div class="icon">▣</div><div>NO GANGS REGISTERED</div></div>';
     return;
   }
   el.innerHTML = state.gangs.map(g => `
     <div class="gang-item" onclick="openGangModal(${g.id})">
       <div>
         <div class="gang-name">${g.name}</div>
-        <div class="gang-meta">${g.fighters.length} fighters · ${g.createdAt}</div>
+        <div class="gang-meta">${g.fighters.length} fighters // ${g.createdAt}</div>
       </div>
       <div class="flex gap-8" onclick="event.stopPropagation()">
-        <button class="btn btn-secondary btn-sm" onclick="openGangModal(${g.id})">Apri</button>
+        <button class="btn btn-secondary btn-sm" onclick="openGangModal(${g.id})">Open</button>
         <button class="btn btn-danger btn-sm" onclick="deleteGang(${g.id})">✕</button>
       </div>
     </div>
@@ -520,29 +512,31 @@ function renderGangFighters() {
   const gang = state.gangs.find(g => g.id === state.selectedGangId);
   const el = document.getElementById('gangFighterList');
   const selectedCount = gang.fighters.filter(f => f.selected).length;
-
-  // Aggiorna contatore e bottone
-  document.getElementById('selectedCount').textContent = selectedCount + ' fighter selezionat' + (selectedCount === 1 ? 'o' : 'i');
+  document.getElementById('selectedCount').textContent = selectedCount + ' fighter' + (selectedCount !== 1 ? 's' : '') + ' selected';
   document.getElementById('btnNuovaBattaglia').disabled = selectedCount === 0;
-
   if (!gang.fighters.length) {
-    el.innerHTML = '<div class="text-dim font-mono" style="font-size:12px;padding:12px 0">Nessun fighter aggiunto</div>';
+    el.innerHTML = '<div class="text-dim" style="font-size:11px;padding:10px 0">// No fighters added</div>';
     return;
   }
-
   el.innerHTML = gang.fighters.map(f => `
     <div class="fighter-select-row ${f.selected ? 'selected' : ''}" onclick="toggleFighter(${f.id})">
       <span class="fighter-select-name">${f.name}</span>
       <div class="flex gap-8" style="align-items:center">
-        <input type="checkbox" class="fighter-checkbox" ${f.selected ? 'checked' : ''} 
-          onclick="event.stopPropagation(); toggleFighter(${f.id})">
+        <input type="checkbox" class="fighter-checkbox" ${f.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleFighter(${f.id})">
         <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteFighter(${f.id})">✕</button>
       </div>
     </div>
   `).join('');
 }
 
-// BATTLE
+// BATTLE MODAL
+function toggleScenario() {
+  const el = document.getElementById('scenarioFields');
+  const toggle = document.getElementById('scenarioToggle');
+  if (el.style.display === 'none') { el.style.display = 'block'; toggle.textContent = '− hide'; }
+  else { el.style.display = 'none'; toggle.textContent = '+ show'; }
+}
+
 function openBattleModal() {
   document.getElementById('gangModal').style.display = 'none';
   document.getElementById('battleModal').style.display = 'flex';
@@ -553,74 +547,46 @@ function closeBattleModal() {
   document.getElementById('gangModal').style.display = 'flex';
 }
 
-function toggleScenario() {
-  const el = document.getElementById('scenarioFields');
-  const toggle = document.getElementById('scenarioToggle');
-  if (el.style.display === 'none') {
-    el.style.display = 'block';
-    toggle.textContent = '− nascondi';
-  } else {
-    el.style.display = 'none';
-    toggle.textContent = '+ mostra';
-  }
-}
-
 function confirmBattle() {
   const name = document.getElementById('battleName').value.trim();
   const campaign = document.getElementById('battleCampaign').value.trim();
   const opponent = document.getElementById('battleOpponent').value.trim();
-
   if (!name || !campaign || !opponent) return;
-
   const gang = state.gangs.find(g => g.id === state.selectedGangId);
   const selected = gang.fighters.filter(f => f.selected);
-
   const scenario = {
     deployment: document.getElementById('battleDeployment').value.trim(),
     objective: document.getElementById('battleObjective').value.trim(),
     sideJob: document.getElementById('battleSideJob').value.trim(),
     crew: document.getElementById('battleCrew').value.trim()
   };
-
   state.activeBattle = {
     id: Date.now(), name, campaign, opponent, scenario,
     gangId: state.selectedGangId, gangName: gang.name,
-    date: new Date().toLocaleDateString('it-IT'),
-    fighters: selected.map(f => ({
-      ...f,
-      participated: true,
-      seriouslyInjured: 0,
-      outOfAction: 0,
-      outOfActionChampion: 0,
-      assistance: 0,
-      mentor: 0,
-      objective: false
-    }))
+    date: new Date().toLocaleDateString('en-GB'),
+    fighters: selected.map(f => ({ ...f, participated: true, seriouslyInjured: 0, outOfAction: 0, outOfActionChampion: 0, assistance: 0, mentor: 0, objective: false }))
   };
-
   save();
   document.getElementById('battleModal').style.display = 'none';
-  ['battleName','battleCampaign','battleOpponent','battleDeployment','battleObjective','battleSideJob','battleCrew'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
+  ['battleName','battleCampaign','battleOpponent','battleDeployment','battleObjective','battleSideJob','battleCrew'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('scenarioFields').style.display = 'none';
-  document.getElementById('scenarioToggle').textContent = '+ mostra';
-
+  document.getElementById('scenarioToggle').textContent = '+ show';
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-battle').classList.add('active');
   document.querySelectorAll('.tab')[1].classList.add('active');
+  openFighterId = null;
   renderBattle();
 }
 
 function calcXP(f) {
   let xp = 0;
   if (f.participated) xp += 1;
-  xp += f.seriouslyInjured * 1;
-  xp += f.outOfAction * 2;
-  xp += f.outOfActionChampion * 3;
-  xp += f.assistance * 1;
-  xp += f.mentor * 1;
+  xp += (f.seriouslyInjured || 0) * 1;
+  xp += (f.outOfAction || 0) * 2;
+  xp += (f.outOfActionChampion || 0) * 3;
+  xp += (f.assistance || 0) * 1;
+  xp += (f.mentor || 0) * 1;
   if (f.objective) xp += 1;
   return xp;
 }
@@ -629,11 +595,8 @@ function update(fighterId, field, value) {
   const f = state.activeBattle.fighters.find(f => f.id === fighterId);
   if (field === 'participated' || field === 'objective') f[field] = value;
   else f[field] = Math.max(0, value);
-  save();
-  renderBattle();
+  save(); renderBattle();
 }
-
-let openFighterId = null;
 
 function toggleAccordion(fighterId) {
   openFighterId = openFighterId === fighterId ? null : fighterId;
@@ -650,20 +613,15 @@ function renderBattle() {
   const noMsg = document.getElementById('noBattleMsg');
   const content = document.getElementById('battleContent');
   const label = document.getElementById('currentBattleLabel');
-
   if (!state.activeBattle) {
-    noMsg.style.display = 'block';
-    content.style.display = 'none';
-    label.textContent = 'NO ACTIVE BATTLE';
-    return;
+    noMsg.style.display = 'block'; content.style.display = 'none';
+    label.textContent = '[ NO ACTIVE BATTLE ]'; return;
   }
-
   const b = state.activeBattle;
-  noMsg.style.display = 'none';
-  content.style.display = 'block';
-  label.textContent = '⚔ ' + b.name;
+  noMsg.style.display = 'none'; content.style.display = 'block';
+  label.textContent = '[ ⚔ ' + b.name + ' ]';
   document.getElementById('battleTitle').textContent = b.name;
-  document.getElementById('battleVs').textContent = [b.campaign, b.opponent ? 'VS ' + b.opponent : null, b.date].filter(Boolean).join(' · ');
+  document.getElementById('battleVs').textContent = [b.campaign, b.opponent ? 'VS ' + b.opponent : null, b.date].filter(Boolean).join(' // ');
 
   document.getElementById('battleFighters').innerHTML = b.fighters.map(f => {
     const isOpen = openFighterId === f.id;
@@ -673,22 +631,25 @@ function renderBattle() {
       <div class="accordion-header" onclick="toggleAccordion(${f.id})">
         <span class="fighter-name">${f.name}</span>
         <div style="display:flex;align-items:center;gap:12px">
-          <span class="xp-total" style="font-size:22px">${xp}</span>
-          <span class="font-mono text-dim" style="font-size:14px">${isOpen ? '▲' : '▼'}</span>
+          <div class="text-right">
+            <div class="xp-total">${xp}</div>
+            <div class="xp-label">XP</div>
+          </div>
+          <span class="text-dim" style="font-size:14px">${isOpen ? '▲' : '▼'}</span>
         </div>
       </div>
       ${isOpen ? `
       <div class="accordion-body">
         <div class="xp-sections">
           <div class="xp-section">
-            <div class="xp-section-title">Partecipazione</div>
+            <div class="xp-section-title">// Participation</div>
             <label class="xp-checkbox-big">
               <input type="checkbox" ${f.participated ? 'checked' : ''} onchange="update(${f.id},'participated',this.checked)">
-              <span>Ha partecipato <span class="xp-badge">+1</span></span>
+              <span>Participated <span class="xp-badge">+1</span></span>
             </label>
           </div>
           <div class="xp-section">
-            <div class="xp-section-title">Kill</div>
+            <div class="xp-section-title">// Kill</div>
             <div class="xp-row">
               <span class="xp-row-label">Seriously Injured <span class="xp-badge">+1</span></span>
               <div class="xp-counter">
@@ -715,7 +676,7 @@ function renderBattle() {
             </div>
           </div>
           <div class="xp-section">
-            <div class="xp-section-title">Supporto</div>
+            <div class="xp-section-title">// Support</div>
             <div class="xp-row">
               <span class="xp-row-label">Assistance Recovery <span class="xp-badge">+1</span></span>
               <div class="xp-counter">
@@ -725,7 +686,7 @@ function renderBattle() {
               </div>
             </div>
             <div class="xp-row">
-              <span class="xp-row-label">Mentor bonus <span class="xp-badge">+1</span></span>
+              <span class="xp-row-label">Mentor Bonus <span class="xp-badge">+1</span></span>
               <div class="xp-counter">
                 <button class="xp-btn" onclick="update(${f.id},'mentor',${f.mentor}-1)">−</button>
                 <span class="xp-count">${f.mentor}</span>
@@ -734,10 +695,10 @@ function renderBattle() {
             </div>
           </div>
           <div class="xp-section">
-            <div class="xp-section-title">Obiettivo</div>
+            <div class="xp-section-title">// Objective</div>
             <label class="xp-checkbox-big">
               <input type="checkbox" ${f.objective ? 'checked' : ''} onchange="update(${f.id},'objective',this.checked)">
-              <span>Controllo Obiettivo <span class="xp-badge">+1</span></span>
+              <span>Controlled Objective <span class="xp-badge">+1</span></span>
             </label>
           </div>
         </div>
@@ -750,96 +711,94 @@ function finalizeBattle() {
   const b = JSON.parse(JSON.stringify(state.activeBattle));
   b.fighters.forEach(f => { f.earnedXP = calcXP(f); });
   b.finalized = true;
-  b.finalizedAt = new Date().toLocaleDateString('it-IT');
+  b.finalizedAt = new Date().toLocaleDateString('en-GB');
   state.battles.push(b);
   state.activeBattle = null;
+  openFighterId = null;
   save();
-  const total = b.fighters.reduce((sum, f) => sum + f.earnedXP, 0);
-  const lines = b.fighters.map(f => f.name + ': +' + f.earnedXP + ' XP').join('\n');
   renderBattle();
 }
 
 function cancelBattle() {
   state.activeBattle = null;
-  save();
-  renderBattle();
+  openFighterId = null;
+  save(); renderBattle();
 }
 
 function deleteBattle(id) {
   state.battles = state.battles.filter(b => b.id !== id);
-  save();
-  renderHistory();
+  save(); renderHistory();
 }
 
 function renderHistory() {
   const el = document.getElementById('historyList');
   if (!state.battles.length) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><div>NESSUNA BATTAGLIA COMPLETATA</div></div>';
+    el.innerHTML = '<div class="empty-state"><div class="icon">▣</div><div>NO BATTLES ON RECORD</div></div>';
     return;
   }
   el.innerHTML = [...state.battles].reverse().map(b => {
     const total = b.fighters.reduce((sum, f) => sum + (f.earnedXP || 0), 0);
     const s = b.scenario || {};
     const hasScenario = s.deployment || s.objective || s.sideJob || s.crew;
-    const vsLine = [b.campaign, b.opponent ? 'VS ' + b.opponent : null].filter(Boolean).join(' · ');
+    const vsLine = [b.campaign, b.opponent ? 'VS ' + b.opponent : null].filter(Boolean).join(' // ');
     return `
     <div class="history-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
         <div>
-          <div style="font-family:Oswald,sans-serif;font-size:18px;color:var(--ivory);font-weight:700">${b.name}</div>
-          ${vsLine ? `<div class="font-mono text-gold" style="font-size:11px;margin-top:2px">${vsLine}</div>` : ''}
-          <div class="font-mono text-dim" style="font-size:10px;margin-top:2px">${b.gangName} · ${b.date}</div>
+          <div style="font-family:Orbitron,monospace;font-size:15px;color:var(--green);font-weight:700;text-shadow:0 0 6px var(--green)">${b.name}</div>
+          ${vsLine ? `<div style="font-size:10px;color:var(--amber);margin-top:2px;letter-spacing:1px">${vsLine}</div>` : ''}
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;letter-spacing:1px">${b.gangName} // ${b.date}</div>
         </div>
-        <div style="display:flex;align-items:flex-start;gap:12px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
           <div class="text-right">
-            <div style="font-family:Oswald,sans-serif;font-size:28px;color:var(--gold);font-weight:700">+${total}</div>
-            <div class="font-mono text-dim" style="font-size:10px">XP TOTALI</div>
+            <div style="font-family:VT323,monospace;font-size:30px;color:var(--amber);text-shadow:0 0 10px var(--amber)">+${total}</div>
+            <div style="font-size:9px;color:var(--text-dim);letter-spacing:2px">XP TOTAL</div>
           </div>
           <button class="btn btn-danger btn-sm" onclick="deleteBattle(${b.id})" style="margin-top:4px">✕</button>
         </div>
       </div>
       ${hasScenario ? `
-      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
-        ${s.deployment ? `<div class="font-mono text-dim" style="font-size:10px">DEPLOYMENT: <span style="color:var(--text)">${s.deployment}</span></div>` : ''}
-        ${s.objective ? `<div class="font-mono text-dim" style="font-size:10px">OBJECTIVE: <span style="color:var(--text)">${s.objective}</span></div>` : ''}
-        ${s.sideJob ? `<div class="font-mono text-dim" style="font-size:10px">SIDE JOB: <span style="color:var(--text)">${s.sideJob}</span></div>` : ''}
-        ${s.crew ? `<div class="font-mono text-dim" style="font-size:10px">CREW: <span style="color:var(--text)">${s.crew}</span></div>` : ''}
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+        ${s.deployment ? `<div style="font-size:10px;color:var(--text-dim)">DEPLOY: <span style="color:var(--text)">${s.deployment}</span></div>` : ''}
+        ${s.objective ? `<div style="font-size:10px;color:var(--text-dim)">OBJ: <span style="color:var(--text)">${s.objective}</span></div>` : ''}
+        ${s.sideJob ? `<div style="font-size:10px;color:var(--text-dim)">SIDE: <span style="color:var(--text)">${s.sideJob}</span></div>` : ''}
+        ${s.crew ? `<div style="font-size:10px;color:var(--text-dim)">CREW: <span style="color:var(--text)">${s.crew}</span></div>` : ''}
       </div>` : ''}
       <div class="divider"></div>
       ${b.fighters.map(f => {
         const key = b.id + '_' + f.id;
         const isOpen = openFighterId === key;
         const rows = [
-          { label: 'Ha partecipato', val: f.participated ? '✓' : '—', xp: f.participated ? 1 : 0 },
+          { label: 'Participated', val: f.participated ? '✓' : null, xp: f.participated ? 1 : 0 },
           { label: 'Seriously Injured', val: f.seriouslyInjured || 0, xp: (f.seriouslyInjured||0) * 1 },
           { label: 'Out of Action', val: f.outOfAction || 0, xp: (f.outOfAction||0) * 2 },
           { label: 'OOA Leader/Champion', val: f.outOfActionChampion || 0, xp: (f.outOfActionChampion||0) * 3 },
           { label: 'Assistance Recovery', val: f.assistance || 0, xp: f.assistance || 0 },
-          { label: 'Mentor bonus', val: f.mentor || 0, xp: f.mentor || 0 },
-          { label: 'Controllo Obiettivo', val: f.objective ? '✓' : '—', xp: f.objective ? 1 : 0 },
+          { label: 'Mentor Bonus', val: f.mentor || 0, xp: f.mentor || 0 },
+          { label: 'Controlled Objective', val: f.objective ? '✓' : null, xp: f.objective ? 1 : 0 },
         ];
         return `
         <div class="accordion-item">
           <div class="accordion-header" onclick="toggleHistoryAccordion(${b.id}, ${f.id})">
-            <span style="font-family:Oswald,sans-serif;color:var(--ivory);font-size:15px">${f.name}</span>
-            <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-family:Orbitron,monospace;font-size:12px;color:var(--green)">${f.name}</span>
+            <div style="display:flex;align-items:center;gap:10px">
               <span class="summary-xp">+${f.earnedXP || 0} XP</span>
-              <span class="font-mono text-dim" style="font-size:14px">${isOpen ? '▲' : '▼'}</span>
+              <span class="text-dim" style="font-size:12px">${isOpen ? '▲' : '▼'}</span>
             </div>
           </div>
           ${isOpen ? `
           <div class="accordion-body">
-            <div class="font-mono text-dim" style="font-size:10px;letter-spacing:2px;margin-bottom:10px">RIEPILOGO XP</div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-bottom:4px">
-              <span class="font-mono text-dim" style="font-size:10px;min-width:30px">N°</span>
-              <span class="font-mono text-dim" style="font-size:10px;flex:1;padding:0 12px">VOCE</span>
-              <span class="font-mono text-dim" style="font-size:10px">XP</span>
+            <div style="font-family:Orbitron,monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:10px">// XP BREAKDOWN</div>
+            <div style="display:flex;padding:4px 0;margin-bottom:4px;border-bottom:1px solid var(--green-border)">
+              <span style="font-size:9px;color:var(--text-dim);min-width:28px;letter-spacing:1px">N°</span>
+              <span style="font-size:9px;color:var(--text-dim);flex:1;padding:0 12px;letter-spacing:1px">ACTION</span>
+              <span style="font-size:9px;color:var(--text-dim);letter-spacing:1px">XP</span>
             </div>
             ${rows.filter(r => r.xp > 0).map(r => `
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
-              <span class="font-mono" style="color:var(--gold);min-width:30px">${r.val === '✓' ? '1' : r.val}</span>
-              <span class="xp-row-label" style="flex:1;padding:0 12px">${r.label}</span>
-              <span class="font-mono" style="color:var(--gold)">+${r.xp}</span>
+            <div style="display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--green-border)">
+              <span style="font-family:VT323,monospace;font-size:18px;color:var(--green);min-width:28px">${r.val === '✓' ? '1' : r.val}</span>
+              <span style="font-size:12px;color:var(--text);flex:1;padding:0 12px">${r.label}</span>
+              <span style="font-family:VT323,monospace;font-size:18px;color:var(--amber)">+${r.xp}</span>
             </div>`).join('')}
           </div>` : ''}
         </div>`;
@@ -852,45 +811,12 @@ function resetAll() {
   state = { gangs: [], battles: [], activeBattle: null, selectedGangId: null };
   openFighterId = null;
   localStorage.removeItem('n26_tracker');
-  renderGangs();
-  renderBattle();
+  renderGangs(); renderBattle();
 }
 
 load();
 renderGangs();
 renderBattle();
-
-function showFighterDetail(battleId, fighterId) {
-  const b = state.battles.find(b => b.id === battleId);
-  const f = b.fighters.find(f => f.id === fighterId);
-
-  const rows = [
-    { label: 'Ha partecipato', value: f.participated ? 1 : 0, xp: 1, show: true },
-    { label: 'Seriously Injured', value: f.seriouslyInjured || 0, xp: 1, show: true },
-    { label: 'Out of Action', value: f.outOfAction || 0, xp: 2, show: true },
-    { label: 'OOA Leader/Champion', value: f.outOfActionChampion || 0, xp: 3, show: true },
-    { label: 'Assistance Recovery', value: f.assistance || 0, xp: 1, show: true },
-    { label: 'Mentor bonus', value: f.mentor || 0, xp: 1, show: true },
-    { label: 'Controllo Obiettivo', value: f.objective ? 1 : 0, xp: 1, show: true },
-  ];
-
-  const rowsHtml = rows.map(r => {
-    const earned = r.value * r.xp;
-    const isCheck = r.label === 'Ha partecipato' || r.label === 'Controllo Obiettivo';
-    return `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
-      <span style="font-family:Inter,sans-serif;font-size:13px;color:${r.value ? 'var(--text)' : 'var(--text-dim)'}">${r.label} <span style="color:var(--gold);font-size:11px">+${r.xp}</span></span>
-      <span style="font-family:Share Tech Mono,monospace;font-size:15px;color:${earned > 0 ? 'var(--gold)' : 'var(--text-dim)'}">
-        ${isCheck ? (r.value ? '✓' : '—') : (r.value > 0 ? '×' + r.value + ' = +' + earned : '—')}
-      </span>
-    </div>`;
-  }).join('');
-
-  document.getElementById('fighterDetailTitle').textContent = f.name;
-  document.getElementById('fighterDetailTotal').textContent = '+' + (f.earnedXP || 0) + ' XP';
-  document.getElementById('fighterDetailRows').innerHTML = rowsHtml;
-  document.getElementById('fighterDetailModal').style.display = 'flex';
-}
 </script>
 </body>
 </html>
