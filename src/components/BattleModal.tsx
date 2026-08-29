@@ -1,6 +1,17 @@
 import { useState } from 'react';
+import type { NewBattleInput } from '../types';
 
-const EMPTY_FORM = {
+interface BattleFormState {
+  name: string;
+  campaign: string;
+  opponent: string;
+  deployment: string;
+  objective: string;
+  sideJob: string;
+  crew: string;
+}
+
+const EMPTY_FORM: BattleFormState = {
   name: '',
   campaign: '',
   opponent: '',
@@ -10,11 +21,16 @@ const EMPTY_FORM = {
   crew: '',
 };
 
-export default function BattleModal({ onConfirm, onCancel }) {
-  const [form, setForm] = useState(EMPTY_FORM);
+interface BattleModalProps {
+  onConfirm: (input: NewBattleInput) => void;
+  onCancel: () => void;
+}
+
+export default function BattleModal({ onConfirm, onCancel }: BattleModalProps) {
+  const [form, setForm] = useState<BattleFormState>(EMPTY_FORM);
   const [showScenario, setShowScenario] = useState(false);
 
-  function set(field, value) {
+  function set(field: keyof BattleFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 

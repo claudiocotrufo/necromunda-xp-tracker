@@ -1,4 +1,10 @@
-export default function Header({ activeBattle }) {
+import type { ActiveBattle } from '../types';
+
+interface HeaderProps {
+  activeBattle: ActiveBattle | null;
+}
+
+export default function Header({ activeBattle }: HeaderProps) {
   return (
     <div className="header">
       <div>
