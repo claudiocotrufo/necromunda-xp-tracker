@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { calcXP } from '../utils/xp';
+import type { ActiveBattle, BattleCounterField, BattleFighter, BattleToggleField } from '../types';
 
-function Counter({ label, xpBadge, value, onChange }) {
+interface CounterProps {
+  label: string;
+  xpBadge: string;
+  value: number;
+  onChange: (value: number) => void;
+}
+
+function Counter({ label, xpBadge, value, onChange }: CounterProps) {
   return (
     <div className="xp-row">
       <span className="xp-row-label">
@@ -16,7 +24,14 @@ function Counter({ label, xpBadge, value, onChange }) {
   );
 }
 
-function FighterAccordion({ fighter, isOpen, onToggle, onUpdate }) {
+interface FighterAccordionProps {
+  fighter: BattleFighter;
+  isOpen: boolean;
+  onToggle: () => void;
+  onUpdate: (field: BattleCounterField | BattleToggleField, value: number | boolean) => void;
+}
+
+function FighterAccordion({ fighter, isOpen, onToggle, onUpdate }: FighterAccordionProps) {
   const xp = calcXP(fighter);
   return (
     <div className="accordion-item">
@@ -39,7 +54,7 @@ function FighterAccordion({ fighter, isOpen, onToggle, onUpdate }) {
               <label className="xp-checkbox-big">
                 <input
                   type="checkbox"
-                  checked={!!fighter.participated}
+                  checked={fighter.participated}
                   onChange={(e) => onUpdate('participated', e.target.checked)}
                 />
                 <span>Participated <span className="xp-badge">+1</span></span>
@@ -64,7 +79,7 @@ function FighterAccordion({ fighter, isOpen, onToggle, onUpdate }) {
               <label className="xp-checkbox-big">
                 <input
                   type="checkbox"
-                  checked={!!fighter.objective}
+                  checked={fighter.objective}
                   onChange={(e) => onUpdate('objective', e.target.checked)}
                 />
                 <span>Controlled Objective <span className="xp-badge">+1</span></span>
@@ -77,8 +92,15 @@ function FighterAccordion({ fighter, isOpen, onToggle, onUpdate }) {
   );
 }
 
-export default function BattleTab({ activeBattle, onUpdateFighter, onFinalize, onCancel }) {
-  const [openFighterId, setOpenFighterId] = useState(null);
+interface BattleTabProps {
+  activeBattle: ActiveBattle | null;
+  onUpdateFighter: (fighterId: number, field: BattleCounterField | BattleToggleField, value: number | boolean) => void;
+  onFinalize: () => void;
+  onCancel: () => void;
+}
+
+export default function BattleTab({ activeBattle, onUpdateFighter, onFinalize, onCancel }: BattleTabProps) {
+  const [openFighterId, setOpenFighterId] = useState<number | null>(null);
 
   if (!activeBattle) {
     return (

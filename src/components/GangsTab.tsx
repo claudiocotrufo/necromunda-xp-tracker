@@ -1,6 +1,14 @@
 import { useState } from 'react';
+import type { Gang } from '../types';
 
-export default function GangsTab({ gangs, onAddGang, onOpenGang, onDeleteGang }) {
+interface GangsTabProps {
+  gangs: Gang[];
+  onAddGang: (name: string) => void;
+  onOpenGang: (id: number) => void;
+  onDeleteGang: (id: number) => void;
+}
+
+export default function GangsTab({ gangs, onAddGang, onOpenGang, onDeleteGang }: GangsTabProps) {
   const [newGangName, setNewGangName] = useState('');
 
   function handleAdd() {

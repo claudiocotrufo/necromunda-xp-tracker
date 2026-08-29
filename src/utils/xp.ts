@@ -1,4 +1,6 @@
-export function calcXP(fighter) {
+import type { BattleFighter } from '../types';
+
+export function calcXP(fighter: BattleFighter): number {
   let xp = 0;
   if (fighter.participated) xp += 1;
   xp += (fighter.seriouslyInjured || 0) * 1;
