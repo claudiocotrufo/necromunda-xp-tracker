@@ -1,7 +1,14 @@
 import { useState } from 'react';
+import type { BattleFighter, FinishedBattle } from '../types';
 
-function HistoryFighterAccordion({ fighter, isOpen, onToggle }) {
-  const rows = [
+interface HistoryFighterAccordionProps {
+  fighter: BattleFighter;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+function HistoryFighterAccordion({ fighter, isOpen, onToggle }: HistoryFighterAccordionProps) {
+  const rows: { label: string; val: string | number | null; xp: number }[] = [
     { label: 'Participated', val: fighter.participated ? '✓' : null, xp: fighter.participated ? 1 : 0 },
     { label: 'Seriously Injured', val: fighter.seriouslyInjured || 0, xp: (fighter.seriouslyInjured || 0) * 1 },
     { label: 'Out of Action', val: fighter.outOfAction || 0, xp: (fighter.outOfAction || 0) * 2 },
@@ -46,8 +53,13 @@ function HistoryFighterAccordion({ fighter, isOpen, onToggle }) {
   );
 }
 
-export default function HistoryTab({ battles, onDeleteBattle }) {
-  const [openKey, setOpenKey] = useState(null);
+interface HistoryTabProps {
+  battles: FinishedBattle[];
+  onDeleteBattle: (id: number) => void;
+}
+
+export default function HistoryTab({ battles, onDeleteBattle }: HistoryTabProps) {
+  const [openKey, setOpenKey] = useState<string | null>(null);
 
   if (battles.length === 0) {
     return (
@@ -69,7 +81,7 @@ export default function HistoryTab({ battles, onDeleteBattle }) {
       <div>
         {ordered.map((b) => {
           const total = b.fighters.reduce((sum, f) => sum + (f.earnedXP || 0), 0);
-          const s = b.scenario || {};
+          const s = b.scenario || { deployment: '', objective: '', sideJob: '', crew: '' };
           const hasScenario = s.deployment || s.objective || s.sideJob || s.crew;
           const vsLine = [b.campaign, b.opponent ? 'VS ' + b.opponent : null].filter(Boolean).join(' // ');
 

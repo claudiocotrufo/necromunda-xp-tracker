@@ -1,9 +1,17 @@
 import { useState } from 'react';
+import type { Gang } from '../types';
 
-export default function GangModal({ gang, onClose, onAddFighter, onDeleteFighter, onToggleFighter, onStartBattle }) {
+interface GangModalProps {
+  gang: Gang;
+  onClose: () => void;
+  onAddFighter: (name: string) => void;
+  onDeleteFighter: (fighterId: number) => void;
+  onToggleFighter: (fighterId: number) => void;
+  onStartBattle: () => void;
+}
+
+export default function GangModal({ gang, onClose, onAddFighter, onDeleteFighter, onToggleFighter, onStartBattle }: GangModalProps) {
   const [newFighterName, setNewFighterName] = useState('');
-
-  if (!gang) return null;
 
   const selectedCount = gang.fighters.filter((f) => f.selected).length;
 
